@@ -45,12 +45,16 @@ st.markdown("""
 
 # (실제 적용: 모든 st.plotly_chart, st.dataframe 호출을 위 CARD_STYLE로 감싸도록 전체 파일에 적용)
 
+def gdrive_csv(file_id, **kwargs):
+    url = f'https://drive.google.com/uc?id={file_id}'
+    return pd.read_csv(url, **kwargs)
+
 # 데이터 로드
 @st.cache_data
 def load_data():
-    main = pd.read_csv('events_main.csv')
-    userinfo = pd.read_csv('events_userinfo.csv')
-    users = pd.read_csv('users_preprocessed.csv', parse_dates=['created_at'])
+    main = gdrive_csv('1j4Zvu__C7eYpq7g-Um7zhZfEjhLh15xc')
+    userinfo = gdrive_csv('1Nm0Zv8n6pz1u7v7HjKkJ5mgLhP6uNIAl')
+    users = gdrive_csv('17yNyGB2OhVNMzJLjIF7s1KeI9jKksmUK', parse_dates=['created_at'])
     return main, userinfo, users
 
 main, userinfo, users = load_data()
@@ -167,9 +171,9 @@ with st.container():
 # ================================
 st.header('3. 유입,이탈 세부 분석')
 # 데이터 로드 및 조인
-main = pd.read_csv('events_main.csv')
-userinfo = pd.read_csv('events_userinfo.csv')
-traffic = pd.read_csv('events_traffic.csv')
+main = gdrive_csv('1j4Zvu__C7eYpq7g-Um7zhZfEjhLh15xc')
+userinfo = gdrive_csv('1Nm0Zv8n6pz1u7v7HjKkJ5mgLhP6uNIAl')
+traffic = gdrive_csv('1D_0qwLuHqH4c03xJljnM7KMBlXHj6r7c')
 
 main['event_time'] = pd.to_datetime(main['created_at'])
 main = main.merge(userinfo[['id', 'user_id']], on='id', how='left')
@@ -277,8 +281,8 @@ with st.container():
 # ================================
 
 # 데이터 로드 및 전처리 (필수)
-order_items = pd.read_csv('order_items_preprocessed.csv')
-products = pd.read_csv('products_preprocessed.csv')
+order_items = gdrive_csv('12QAACJNhpMI_kOIxoR3d5F6umFn1R5cU')
+products = gdrive_csv('1aArQQQrU08N_yC2qQx2iD7wA6B_x7CNJ')
 order_items['user_id'] = order_items['user_id'].astype(str)
 order_items = order_items.merge(products[['id', 'brand', 'category']], left_on='product_id', right_on='id', how='left')
 
@@ -357,7 +361,7 @@ if not category_churn_df.empty:
 st.header('4. 고객 세그먼트 분석')
 
 # 데이터 로드
-users = pd.read_csv('users_preprocessed.csv')
+users = gdrive_csv('17yNyGB2OhVNMzJLjIF7s1KeI9jKksmUK')
 
 # 연령대 구간 생성
 bins = [0, 19, 29, 39, 49, 59, 200]
